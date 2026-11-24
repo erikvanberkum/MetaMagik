@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.5.7-erikvanberkum (2026-11-24)
+
+### Fixed
+- **`NewTaskValidator` is now a thin subclass of core `TaskValidator`** instead of a frozen copy of the Kanboard 1.2.18 class. It only adds the required-custom-field check on top of `parent::`, so core validation changes are inherited automatically. This restores checks the old copy had been missing since 1.2.58:
+  - assignee must be assignable to the project, on task creation and bulk creation
+  - `color_id` must be a valid colour
+- Replaces the single-method `validateAssignee()` patch from 1.5.6-erikvanberkum.
+
+### Known issues
+- `Api/Procedure/NewCreateTaskProcedure.php` and other core-class copies still need auditing against Kanboard 1.2.58.
+- Custom fields are not carried over when a recurring task creates its next copy (upstream #103).
+
 ## 1.5.6-erikvanberkum (2026-11-24)
 
 Based on upstream 1.5.5 plus upstream changes since. Targets Kanboard 1.2.58+.
