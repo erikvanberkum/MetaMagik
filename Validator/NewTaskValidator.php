@@ -67,6 +67,22 @@ class NewTaskValidator extends BaseValidator
     }
 
     /**
+     * Validate assignee (added for Kanboard >= 1.2.58, copied from core)
+     *
+     * @access public
+     * @param  array    $values           Form values
+     * @return array    $valid, $errors   [0] = Success or not, [1] = List of errors
+     */
+    public function validateAssignee(array $values)
+    {
+        if (! empty($values['owner_id']) && (empty($values['project_id']) || ! $this->projectPermissionModel->isAssignable($values['project_id'], $values['owner_id']))) {
+            return array(false, array('owner_id' => array(t('This user cannot be assigned to tasks of this project'))));
+        }
+
+        return array(true, array());
+    }
+
+    /**
      * Validate task creation
      *
      * @access public
@@ -249,4 +265,4 @@ class NewTaskValidator extends BaseValidator
             $v->getErrors()
         );
     }
-}
+}

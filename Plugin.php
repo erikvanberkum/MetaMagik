@@ -140,7 +140,7 @@ class Plugin extends Base
 
     public function getPluginVersion()
     {
-        return '1.5.6';
+        return '1.5.6-erikvanberkum';
     }
 
     public function getPluginHomepage()

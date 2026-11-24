@@ -28,8 +28,27 @@ class NewTaskModificationModel extends Base
     public function update(array $values, $fire_events = true)
     {
         $task = $this->taskFinderModel->getById($values['id']);
-        
-        $this->updateTags($values, $task);
+
+        if (empty($task)) {
+            return false;
+        }
+
+        if (isset($values['project_id']) && (int) $values['project_id'] !== (int) $task['project_id']) {
+            return false;
+        }
+
+        if (! $this->taskModel->hasValidProjectReferences($task['project_id'], $values)) {
+            return false;
+        }
+
+        if (isset($values['tags_only_add_new']) && $values['tags_only_add_new'] == 1) {
+            $this->updateTags($values, $task, false);
+        } else {
+            $this->updateTags($values, $task);
+        }
+
+        // never let this form-only flag reach the SQL update (issue #99)
+        unset($values['tags_only_add_new']);
         
         $this->prepare($values);
         
@@ -150,10 +169,10 @@ class NewTaskModificationModel extends Base
      * @param  array  $values
      * @param  array  $original_task
      */
-    protected function updateTags(array &$values, array $original_task)
+    protected function updateTags(array &$values, array $original_task, $remove_other_tags = true)
     {
         if (isset($values['tags'])) {
-            $this->taskTagModel->save($original_task['project_id'], $values['id'], $values['tags']);
+            $this->taskTagModel->save($original_task['project_id'], $values['id'], $values['tags'], $remove_other_tags);
             unset($values['tags']);
         }
     }

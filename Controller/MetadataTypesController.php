@@ -149,9 +149,9 @@ class MetadataTypesController extends BaseController
      */
     private function createMachineName($human_name = '')
     {
-        $machine_name = strtolower($human_name);
+        $machine_name = mb_strtolower($human_name, 'UTF-8');
         // Remove special characters (remove the below line to support non latin characters)
-        $machine_name = preg_replace('/[^a-z0-9_\s-]/', '', $machine_name);
+        $machine_name = preg_replace('/[^\p{L}\p{N}_\s-]/u', '', $machine_name);
         // Cleanup multiple dashes or whitespaces
         $machine_name = preg_replace('/[\s-]+/', ' ', $machine_name);
         // Replace whitespaces with underscores
@@ -179,7 +179,7 @@ class MetadataTypesController extends BaseController
     private function fixHumanName($human_name = '')
     {
         // Remove special characters (remove the below line to support non latin characters)
-        $human_name = preg_replace('/[^A-Za-z0-9_\s-]/', '', $human_name);
+        $human_name = preg_replace('/[^\p{L}\p{N}_\s-]/u', '', $human_name);
         // Cleanup multiple dashes or whitespaces
         $human_name = preg_replace('/[\s-]+/', ' ', $human_name);
         // Replace whitespaces with underscores
